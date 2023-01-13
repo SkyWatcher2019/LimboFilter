@@ -82,10 +82,10 @@ public class CachedCaptcha {
       }
     }
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.PREPARE_CAPTCHA_PACKETS) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.PREPARE_CAPTCHA_PACKETS) {
       PreparedPacket prepared = this.plugin.getLimboFactory().createPreparedPacket();
-      if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
-        for (int i = 0; i < Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH * Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT; i++) {
+      if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+        for (int i = 0; i < Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH * Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT; i++) {
           final int index = i;
           prepared.prepare(version -> mapDataPacketEnum[version.ordinal()][index], ProtocolVersion.MINECRAFT_1_8);
         }

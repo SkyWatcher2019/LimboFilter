@@ -75,10 +75,10 @@ public class CaptchaGenerator {
 
   public CaptchaGenerator(LimboFilter plugin) {
     this.plugin = plugin;
-    if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
       this.painter = new CaptchaPainter(
-          MapData.MAP_DIM_SIZE * Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH,
-          MapData.MAP_DIM_SIZE * Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT);
+          MapData.MAP_DIM_SIZE * Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH,
+          MapData.MAP_DIM_SIZE * Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT);
     } else {
       this.painter = new CaptchaPainter(MapData.MAP_DIM_SIZE, MapData.MAP_DIM_SIZE);
     }
@@ -86,7 +86,7 @@ public class CaptchaGenerator {
 
   public void initializeGenerator() {
     try {
-      for (String backplatePath : Settings.IMP.MAIN.CAPTCHA_GENERATOR.BACKPLATE_PATHS) {
+      for (String backplatePath : Settings.IMP.CAPTCHA.GENERATOR.BACKPLATE_PATHS) {
         if (!backplatePath.isEmpty()) {
           CraftMapCanvas craftMapCanvas = this.createCraftMapCanvas();
           craftMapCanvas.drawImage(this.resizeIfNeeded(ImageIO.read(this.plugin.getFile(backplatePath)),
@@ -98,8 +98,8 @@ public class CaptchaGenerator {
       throw new IllegalArgumentException(e);
     }
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.SAVE_NUMBER_SPELLING_OUTPUT) {
-      int from = (int) Math.pow(10, Settings.IMP.MAIN.CAPTCHA_GENERATOR.LENGTH - 1);
+    if (Settings.IMP.CAPTCHA.GENERATOR.SAVE_NUMBER_SPELLING_OUTPUT) {
+      int from = (int) Math.pow(10, Settings.IMP.CAPTCHA.GENERATOR.LENGTH - 1);
       int to = from * 10;
 
       try (OutputStream output = new FileOutputStream("number_spelling.txt")) {
@@ -114,29 +114,29 @@ public class CaptchaGenerator {
 
     this.fonts.clear();
 
-    float fontSize = (float) Settings.IMP.MAIN.CAPTCHA_GENERATOR.RENDER_FONT_SIZE;
+    float fontSize = (float) Settings.IMP.CAPTCHA.GENERATOR.RENDER_FONT_SIZE;
 
-    if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.MAIN.FRAMED_CAPTCHA.AUTOSCALE_FONT) {
-      fontSize *= Math.min(Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH, Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT);
+    if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.AUTOSCALE_FONT) {
+      fontSize *= Math.min(Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH, Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT);
     }
 
     Map<TextAttribute, Object> textSettings = Map.of(
         TextAttribute.SIZE,
         fontSize,
         TextAttribute.STRIKETHROUGH,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.STRIKETHROUGH,
+        Settings.IMP.CAPTCHA.GENERATOR.STRIKETHROUGH,
         TextAttribute.UNDERLINE,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.UNDERLINE
+        Settings.IMP.CAPTCHA.GENERATOR.UNDERLINE
     );
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.USE_STANDARD_FONTS) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.USE_STANDARD_FONTS) {
       this.fonts.add(this.getRenderedFont(new Font(Font.SANS_SERIF, Font.PLAIN, (int) fontSize).deriveFont(textSettings)));
       this.fonts.add(this.getRenderedFont(new Font(Font.SERIF, Font.PLAIN, (int) fontSize).deriveFont(textSettings)));
       this.fonts.add(this.getRenderedFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) fontSize).deriveFont(textSettings)));
     }
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONTS_PATH != null) {
-      Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONTS_PATH.forEach(fontFile -> {
+    if (Settings.IMP.CAPTCHA.GENERATOR.FONTS_PATH != null) {
+      Settings.IMP.CAPTCHA.GENERATOR.FONTS_PATH.forEach(fontFile -> {
         try {
           if (!fontFile.isEmpty()) {
             LimboFilter.getLogger().info("Loading font " + fontFile + ".");
@@ -150,15 +150,15 @@ public class CaptchaGenerator {
       });
     }
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.GRADIENT.GRADIENT_ENABLED) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.GRADIENT.GRADIENT_ENABLED) {
       BufferedImage gradientImage = new BufferedImage(this.painter.getWidth(), this.painter.getHeight(), BufferedImage.TYPE_INT_RGB);
       int[] imageData = ((DataBufferInt) gradientImage.getRaster().getDataBuffer()).getData();
       Graphics2D graphics = gradientImage.createGraphics();
 
       ThreadLocalRandom random = ThreadLocalRandom.current();
-      Settings.MAIN.CAPTCHA_GENERATOR.GRADIENT settings = Settings.IMP.MAIN.CAPTCHA_GENERATOR.GRADIENT;
+      Settings.CAPTCHA.GENERATOR.GRADIENT settings = Settings.IMP.CAPTCHA.GENERATOR.GRADIENT;
 
-      Color[] colors = Settings.IMP.MAIN.CAPTCHA_GENERATOR.RGB_COLOR_LIST.stream().map(s -> Color.decode("#" + s)).toArray(Color[]::new);
+      Color[] colors = Settings.IMP.CAPTCHA.GENERATOR.RGB_COLOR_LIST.stream().map(s -> Color.decode("#" + s)).toArray(Color[]::new);
 
       List<Double> fractions = settings.FRACTIONS;
 
@@ -189,7 +189,7 @@ public class CaptchaGenerator {
 
       graphics.dispose();
     } else {
-      Settings.IMP.MAIN.CAPTCHA_GENERATOR.RGB_COLOR_LIST.forEach(e ->
+      Settings.IMP.CAPTCHA.GENERATOR.RGB_COLOR_LIST.forEach(e ->
           this.colors.add(new byte[]{MapPalette.tryFastMatchColor(Integer.parseInt(e, 16) | 0xFF000000, ProtocolVersion.MAXIMUM_VERSION)}));
     }
 
@@ -199,27 +199,27 @@ public class CaptchaGenerator {
   }
 
   private CraftMapCanvas createCraftMapCanvas() {
-    if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
-      return new CraftMapCanvas(Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH, Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT);
+    if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+      return new CraftMapCanvas(Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH, Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT);
     } else {
       return new CraftMapCanvas(1, 1);
     }
   }
 
   private RenderedFont getRenderedFont(Font font) {
-    boolean scaleFont = Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.MAIN.FRAMED_CAPTCHA.AUTOSCALE_FONT;
-    int multiplierX = scaleFont ? Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH : 1;
-    int multiplierY = scaleFont ? Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT : 1;
+    boolean scaleFont = Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.AUTOSCALE_FONT;
+    int multiplierX = scaleFont ? Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH : 1;
+    int multiplierY = scaleFont ? Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT : 1;
 
     return new RenderedFont(font,
         new FontRenderContext(null, true, true),
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.PATTERN.toCharArray(),
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_LETTER_WIDTH * multiplierX,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_LETTER_HEIGHT * multiplierY,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_OUTLINE,
-        (float) Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_OUTLINE_RATE,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_OUTLINE_OFFSET_X * multiplierX,
-        Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_OUTLINE_OFFSET_Y * multiplierY,
+        Settings.IMP.CAPTCHA.GENERATOR.PATTERN.toCharArray(),
+        Settings.IMP.CAPTCHA.GENERATOR.FONT_LETTER_WIDTH * multiplierX,
+        Settings.IMP.CAPTCHA.GENERATOR.FONT_LETTER_HEIGHT * multiplierY,
+        Settings.IMP.CAPTCHA.GENERATOR.FONT_OUTLINE,
+        (float) Settings.IMP.CAPTCHA.GENERATOR.FONT_OUTLINE_RATE,
+        Settings.IMP.CAPTCHA.GENERATOR.FONT_OUTLINE_OFFSET_X * multiplierX,
+        Settings.IMP.CAPTCHA.GENERATOR.FONT_OUTLINE_OFFSET_Y * multiplierY,
         1.35
     );
   }
@@ -272,13 +272,13 @@ public class CaptchaGenerator {
       return thread;
     });
 
-    for (int i = 0; i < Settings.IMP.MAIN.CAPTCHA_GENERATOR.IMAGES_COUNT; ++i) {
+    for (int i = 0; i < Settings.IMP.CAPTCHA.GENERATOR.IMAGES_COUNT; ++i) {
       this.executor.execute(() -> this.genNewPacket(this.tempCachedCaptcha));
     }
 
     long start = System.currentTimeMillis();
     this.executor.execute(() -> {
-      while (this.executor.getCompletedTaskCount() != Settings.IMP.MAIN.CAPTCHA_GENERATOR.IMAGES_COUNT) {
+      while (this.executor.getCompletedTaskCount() != Settings.IMP.CAPTCHA.GENERATOR.IMAGES_COUNT) {
         // Busy wait.
       }
 
@@ -328,8 +328,8 @@ public class CaptchaGenerator {
 
           for (int mapId = 0; mapId < packets.length; mapId++) {
             MapData mapData = map.getMapData(mapId, mapVersion);
-            if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED
-                && random.nextDouble() <= Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAME_ROTATION_CHANCE) {
+            if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED
+                && random.nextDouble() <= Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAME_ROTATION_CHANCE) {
               for (int j = 0; j < random.nextInt(4); ++j) {
                 this.rotate(mapData);
               }
@@ -383,10 +383,10 @@ public class CaptchaGenerator {
   private String spellNumber(int number) {
     StringBuilder result = new StringBuilder();
 
-    Map<String, String> exceptions = Settings.IMP.MAIN.CAPTCHA_GENERATOR.NUMBER_SPELLING_EXCEPTIONS;
-    List<List<String>> words = Settings.IMP.MAIN.CAPTCHA_GENERATOR.NUMBER_SPELLING_WORDS;
+    Map<String, String> exceptions = Settings.IMP.CAPTCHA.GENERATOR.NUMBER_SPELLING_EXCEPTIONS;
+    List<List<String>> words = Settings.IMP.CAPTCHA.GENERATOR.NUMBER_SPELLING_WORDS;
 
-    int idx = Settings.IMP.MAIN.CAPTCHA_GENERATOR.LENGTH;
+    int idx = Settings.IMP.CAPTCHA.GENERATOR.LENGTH;
     String n = String.valueOf(number);
 
     while (!n.isEmpty()) {
@@ -411,9 +411,9 @@ public class CaptchaGenerator {
   }
 
   private Pair<String, String> randomAnswer() {
-    int length = Settings.IMP.MAIN.CAPTCHA_GENERATOR.LENGTH;
-    if (!Settings.IMP.MAIN.CAPTCHA_GENERATOR.NUMBER_SPELLING) {
-      String pattern = Settings.IMP.MAIN.CAPTCHA_GENERATOR.PATTERN;
+    int length = Settings.IMP.CAPTCHA.GENERATOR.LENGTH;
+    if (!Settings.IMP.CAPTCHA.GENERATOR.NUMBER_SPELLING) {
+      String pattern = Settings.IMP.CAPTCHA.GENERATOR.PATTERN;
 
       char[] text = new char[length];
       for (int i = 0; i < length; ++i) {

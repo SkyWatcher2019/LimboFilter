@@ -46,8 +46,14 @@ public class Settings extends YamlConfig {
 
   @Create
   public MAIN MAIN;
-
-  @Comment("Don't use \\n, use {NL} for new line, and {PRFX} for prefix.")
+  @Create
+  public CAPTCHA CAPTCHA;
+  @Create
+  public TCP_LISTENER TCP_LISTENER;
+  @Create
+  public DANGER DANGER;
+  @Create
+  public STRINGS STRINGS;
   public static class MAIN {
 
     @Comment("Check if player's Minecraft client sends the network packet with the settings.")
@@ -68,14 +74,6 @@ public class Settings extends YamlConfig {
     public int GEYSER_TIME_OUT = 45000;
     @Comment("The timeout for Netty. Max ping while being on the filter limbo. Used to remove useless buffers from RAM.")
     public int MAX_PING = 3500;
-    @Comment("Change the parameters below only if you know what they mean.")
-    public int NON_VALID_POSITION_XZ_ATTEMPTS = 10;
-    public int NON_VALID_POSITION_Y_ATTEMPTS = 10;
-    public double MAX_VALID_POSITION_DIFFERENCE = 0.01;
-    @Comment("Parameter for developers and contributors.")
-    public boolean FALLING_CHECK_DEBUG = false;
-    @Comment("Should captcha be displayed in the left hand. May cause problems with entering captcha for users with 4:3 monitors. Version: 1.9+")
-    public boolean CAPTCHA_LEFT_HAND = false;
 
     @Comment({
         "Available states: ONLY_POSITION, ONLY_CAPTCHA, CAPTCHA_POSITION, CAPTCHA_ON_POSITION_FAILED",
@@ -193,11 +191,20 @@ public class Settings extends YamlConfig {
       public int Z = 0;
     }
 
+    @Comment(
+        "Available dimensions: OVERWORLD, NETHER, THE_END"
+    )
+    public Dimension BOTFILTER_DIMENSION = Dimension.THE_END;
+
+  }
+  public static class CAPTCHA {
+    @Comment("Should captcha be displayed in the left hand. May cause problems with entering captcha for users with 4:3 monitors. Version: 1.9+")
+    public boolean CAPTCHA_LEFT_HAND = false;
+
     @Create
-    public MAIN.CAPTCHA_GENERATOR CAPTCHA_GENERATOR;
+    public CAPTCHA.GENERATOR GENERATOR;
 
-    public static class CAPTCHA_GENERATOR {
-
+    public static class GENERATOR {
       @Comment("Prepares Captcha packets, consumes x8 more RAM, but improves CPU performance during bot attacks. It's recommended to disable it, if you have less than 2GB of RAM.")
       public boolean PREPARE_CAPTCHA_PACKETS = false;
       @Comment("List of paths to the background image to draw on captcha. Any format, 128x128 128x128 px (will be automatically resized and stretched to the correct size). [] if empty.")
@@ -284,116 +291,39 @@ public class Settings extends YamlConfig {
         @Comment("Numbers ranging from 0.0 to 1.0 specifying the distribution of colors along the gradient. Can be empty.")
         public List<Double> FRACTIONS = List.of(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
       }
-    }
 
-    @Create
-    public FRAMED_CAPTCHA FRAMED_CAPTCHA;
-
-    public static class FRAMED_CAPTCHA {
-
-      public boolean FRAMED_CAPTCHA_ENABLED = false;
-      public int WIDTH = 3;
-      public int HEIGHT = 3;
-      public double FRAME_ROTATION_CHANCE = 0.33;
-      public boolean AUTOSCALE_FONT = true;
 
       @Create
-      public COORDS COORDS;
+      public FRAMED_CAPTCHA FRAMED_CAPTCHA;
 
-      public static class COORDS {
+      public static class FRAMED_CAPTCHA {
 
-        public int X = -3;
-        public int Y = 128;
-        public int Z = 2;
+        public boolean FRAMED_CAPTCHA_ENABLED = false;
+        public int WIDTH = 3;
+        public int HEIGHT = 3;
+        public double FRAME_ROTATION_CHANCE = 0.33;
+        public boolean AUTOSCALE_FONT = true;
 
         @Create
-        public OFFSET_1_7 OFFSET_1_7;
+        public COORDS COORDS;
 
-        public static class OFFSET_1_7 {
+        public static class COORDS {
 
-          public int X = 0;
-          public int Y = -2;
-          public int Z = 1;
+          public int X = -3;
+          public int Y = 128;
+          public int Z = 2;
+
+          @Create
+          public OFFSET_1_7 OFFSET_1_7;
+
+          public static class OFFSET_1_7 {
+
+            public int X = 0;
+            public int Y = -2;
+            public int Z = 1;
+          }
         }
       }
-    }
-
-    @Comment(
-        "Available dimensions: OVERWORLD, NETHER, THE_END"
-    )
-    public Dimension BOTFILTER_DIMENSION = Dimension.THE_END;
-
-    @Create
-    public MAIN.TCP_LISTENER TCP_LISTENER;
-
-    public static class TCP_LISTENER {
-
-      @Comment({
-          "Experimental proxy check feature",
-          "Checks the proxy via comparing L4 (TCP PSH+ACK -> TCP ACK) and L7 (Minecraft KeepAlive) ping",
-          "Works better with falling check enabled (150+ falling-check-ticks)",
-          "Needs libpcap (libpcap-dev) on Linux; WinPcap/npcap on Windows",
-          "Needs CAP_NET_RAW (or super-user) on Linux",
-          "Doesn't work if Velocity is behind reverse-proxy (haproxy, protection services, etc)",
-      })
-      public boolean PROXY_DETECTOR_ENABLED = false;
-
-      @Comment("Difference between TCP (L4) and Minecraft (L7) ping in milliseconds to detect proxies.")
-      public int PROXY_DETECTOR_DIFFERENCE = 5;
-
-      public String INTERFACE_NAME = "any";
-
-      @Comment("How many bytes we should take from the each frame to analyse. 120 is enough for any TCP+IP header analysing")
-      public int SNAPLEN = 120;
-
-      @Comment("How many milliseconds should the delay be between frame analysis.")
-      public int LISTEN_DELAY = 50;
-
-      @Comment("Time in millis for capturing frames")
-      public int TIMEOUT = 10;
-
-      @Comment("Log L4 and L7 ping")
-      public boolean DEBUG_ON_FAIL = false;
-      public boolean DEBUG_ON_SUCCESS = false;
-    }
-
-    @Create
-    public MAIN.STRINGS STRINGS;
-
-    @Comment("Leave title fields empty to disable.")
-    public static class STRINGS {
-
-      public String RELOAD = "{PRFX} &aReloaded successfully!";
-
-      public String CLIENT_SETTINGS_KICK = "{PRFX}{NL}&cYour client doesn't send settings packets.";
-      public String CLIENT_BRAND_KICK = "{PRFX}{NL}&cYour client doesn't send brand packet or it's blocked.";
-      public String PROXY_CHECK_KICK = "{PRFX}{NL}&cYour connection is suspicious.";
-
-      public String CHECKING_CHAT = "{PRFX} Bot-Filter check was started, please wait and don't move..";
-      public String CHECKING_TITLE = "{PRFX}";
-      public String CHECKING_SUBTITLE = "&aPlease wait..";
-
-      public String CHECKING_CAPTCHA_CHAT = "{PRFX} &aPlease, solve the captcha, you have &6{0} &aattempts.";
-      public String CHECKING_WRONG_CAPTCHA_CHAT = "{PRFX} &cYou entered the captcha incorrectly, you have &6{0} &cattempts left.";
-      public String CHECKING_CAPTCHA_TITLE = "&aPlease solve the captcha.";
-      public String CHECKING_CAPTCHA_SUBTITLE = "&aYou have &6{0} &aattempts.";
-
-      public String SUCCESSFUL_CRACKED = "{PRFX} &aSuccessfully passed Bot-Filter check.";
-      public String SUCCESSFUL_PREMIUM_KICK = "{PRFX}{NL}&aSuccessfully passed Bot-Filter check.{NL}&6Please, rejoin the server!";
-
-      public String CAPTCHA_FAILED_KICK = "{PRFX}{NL}&cYou've mistaken in captcha check.{NL}&6Please, rejoin the server.";
-      public String FALLING_CHECK_FAILED_KICK = "{PRFX}{NL}&cFalling Check was failed.{NL}&6Please, rejoin the server.";
-      public String TIMES_UP = "{PRFX}{NL}&cYou have exceeded the maximum Bot-Filter check time.{NL}&6Please, rejoin the server.";
-
-      public String STATS_FORMAT = "&c&lTotal Blocked: &6&l{0} &c&l| Connections: &6&l{1}s &c&l| Pings: &6&l{2}s &c&l| Total Connections: &6&l{3} &c&l| L7 Ping: &6&l{4} &c&l| L4 Ping: &6&l{5}";
-      public String STATS_ENABLED = "{PRFX} &aNow you see statistics in your action bar.";
-      public String STATS_DISABLED = "{PRFX} &cYou're no longer see statistics in your action bar.";
-
-      public String SEND_PLAYER_SUCCESSFUL = "{PRFX} Successfully sent {0} to the filter limbo.";
-      public String SEND_SERVER_SUCCESSFUL = "{PRFX} Successfully sent {0} players from {1} to the filter limbo.";
-      public String SEND_FAILED = "{PRFX} There is no registered servers or connected players named {0}.";
-
-      public String CAPTCHA_NOT_READY_YET = "{PRFX} Captcha is not ready yet. Try again in a few seconds";
     }
 
     @Create
@@ -410,5 +340,79 @@ public class Settings extends YamlConfig {
       public double FALLING_CHECK_YAW = 90;
       public double FALLING_CHECK_PITCH = 10;
     }
+  }
+  public static class TCP_LISTENER {
+
+    @Comment({
+        "Experimental proxy check feature",
+        "Checks the proxy via comparing L4 (TCP PSH+ACK -> TCP ACK) and L7 (Minecraft KeepAlive) ping",
+        "Works better with falling check enabled (150+ falling-check-ticks)",
+        "Needs libpcap (libpcap-dev) on Linux; WinPcap/npcap on Windows",
+        "Needs CAP_NET_RAW (or super-user) on Linux",
+        "Doesn't work if Velocity is behind reverse-proxy (haproxy, protection services, etc)",
+    })
+    public boolean PROXY_DETECTOR_ENABLED = false;
+
+    @Comment("Difference between TCP (L4) and Minecraft (L7) ping in milliseconds to detect proxies.")
+    public int PROXY_DETECTOR_DIFFERENCE = 5;
+
+    public String INTERFACE_NAME = "any";
+
+    @Comment("How many bytes we should take from the each frame to analyse. 120 is enough for any TCP+IP header analysing")
+    public int SNAPLEN = 120;
+
+    @Comment("How many milliseconds should the delay be between frame analysis.")
+    public int LISTEN_DELAY = 50;
+
+    @Comment("Time in millis for capturing frames")
+    public int TIMEOUT = 10;
+
+    @Comment("Log L4 and L7 ping")
+    public boolean DEBUG_ON_FAIL = false;
+    public boolean DEBUG_ON_SUCCESS = false;
+  }
+  public static class DANGER {
+    @Comment("Parameter for developers and contributors.")
+    public boolean FALLING_CHECK_DEBUG = false;
+    @Comment("Change the parameters below only if you know what they mean.")
+    public int NON_VALID_POSITION_XZ_ATTEMPTS = 10;
+    public int NON_VALID_POSITION_Y_ATTEMPTS = 10;
+    public double MAX_VALID_POSITION_DIFFERENCE = 0.01;
+  }
+  @Comment("Don't use \\n, use {NL} for new line, and {PRFX} for prefix.")
+  @Comment("Leave title fields empty to disable.")
+  public static class STRINGS {
+
+    public String RELOAD = "{PRFX} &aReloaded successfully!";
+
+    public String CLIENT_SETTINGS_KICK = "{PRFX}{NL}&cYour client doesn't send settings packets.";
+    public String CLIENT_BRAND_KICK = "{PRFX}{NL}&cYour client doesn't send brand packet or it's blocked.";
+    public String PROXY_CHECK_KICK = "{PRFX}{NL}&cYour connection is suspicious.";
+
+    public String CHECKING_CHAT = "{PRFX} Bot-Filter check was started, please wait and don't move..";
+    public String CHECKING_TITLE = "{PRFX}";
+    public String CHECKING_SUBTITLE = "&aPlease wait..";
+
+    public String CHECKING_CAPTCHA_CHAT = "{PRFX} &aPlease, solve the captcha, you have &6{0} &aattempts.";
+    public String CHECKING_WRONG_CAPTCHA_CHAT = "{PRFX} &cYou entered the captcha incorrectly, you have &6{0} &cattempts left.";
+    public String CHECKING_CAPTCHA_TITLE = "&aPlease solve the captcha.";
+    public String CHECKING_CAPTCHA_SUBTITLE = "&aYou have &6{0} &aattempts.";
+
+    public String SUCCESSFUL_CRACKED = "{PRFX} &aSuccessfully passed Bot-Filter check.";
+    public String SUCCESSFUL_PREMIUM_KICK = "{PRFX}{NL}&aSuccessfully passed Bot-Filter check.{NL}&6Please, rejoin the server!";
+
+    public String CAPTCHA_FAILED_KICK = "{PRFX}{NL}&cYou've mistaken in captcha check.{NL}&6Please, rejoin the server.";
+    public String FALLING_CHECK_FAILED_KICK = "{PRFX}{NL}&cFalling Check was failed.{NL}&6Please, rejoin the server.";
+    public String TIMES_UP = "{PRFX}{NL}&cYou have exceeded the maximum Bot-Filter check time.{NL}&6Please, rejoin the server.";
+
+    public String STATS_FORMAT = "&c&lTotal Blocked: &6&l{0} &c&l| Connections: &6&l{1}s &c&l| Pings: &6&l{2}s &c&l| Total Connections: &6&l{3} &c&l| L7 Ping: &6&l{4} &c&l| L4 Ping: &6&l{5}";
+    public String STATS_ENABLED = "{PRFX} &aNow you see statistics in your action bar.";
+    public String STATS_DISABLED = "{PRFX} &cYou're no longer see statistics in your action bar.";
+
+    public String SEND_PLAYER_SUCCESSFUL = "{PRFX} Successfully sent {0} to the filter limbo.";
+    public String SEND_SERVER_SUCCESSFUL = "{PRFX} Successfully sent {0} players from {1} to the filter limbo.";
+    public String SEND_FAILED = "{PRFX} There is no registered servers or connected players named {0}.";
+
+    public String CAPTCHA_NOT_READY_YET = "{PRFX} Captcha is not ready yet. Try again in a few seconds";
   }
 }

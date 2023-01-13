@@ -149,7 +149,7 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
     this.posY = y;
     this.posZ = z;
 
-    if (Settings.IMP.MAIN.FALLING_CHECK_DEBUG) {
+    if (Settings.IMP.DANGER.FALLING_CHECK_DEBUG) {
       this.logPosition();
     }
     if (!this.startedListening && this.state != CheckState.ONLY_CAPTCHA) {
@@ -160,7 +160,7 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
           this.sendCaptcha();
         }
       }
-      if (this.nonValidPacketsSize > Settings.IMP.MAIN.NON_VALID_POSITION_XZ_ATTEMPTS) {
+      if (this.nonValidPacketsSize > Settings.IMP.DANGER.NON_VALID_POSITION_XZ_ATTEMPTS) {
         this.fallingCheckFailed("A lot of non-valid XZ attempts");
         return;
       }
@@ -182,7 +182,7 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
         ++this.ignoredTicks;
         return;
       }
-      if (this.ignoredTicks > Settings.IMP.MAIN.NON_VALID_POSITION_Y_ATTEMPTS) {
+      if (this.ignoredTicks > Settings.IMP.DANGER.NON_VALID_POSITION_Y_ATTEMPTS) {
         this.fallingCheckFailed("A lot of non-valid Y attempts");
         return;
       }
@@ -208,7 +208,7 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
   }
 
   private void fallingCheckFailed(String reason) {
-    if (Settings.IMP.MAIN.FALLING_CHECK_DEBUG) {
+    if (Settings.IMP.DANGER.FALLING_CHECK_DEBUG) {
       LimboFilter.getLogger().info(reason);
       this.logPosition();
     }
@@ -232,7 +232,7 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
 
   private boolean checkY() {
     while (this.ticks < LOADED_CHUNK_SPEED_CACHE.length
-        && Math.abs(this.lastY - this.posY - getLoadedChunkSpeed(this.ticks)) > Settings.IMP.MAIN.MAX_VALID_POSITION_DIFFERENCE) {
+        && Math.abs(this.lastY - this.posY - getLoadedChunkSpeed(this.ticks)) > Settings.IMP.DANGER.MAX_VALID_POSITION_DIFFERENCE) {
       ++this.ticks;
       ++this.ignoredTicks;
     }
@@ -347,17 +347,17 @@ public class BotFilterSessionHandler implements LimboSessionHandler {
     int l7Ping = this.player.getPing();
     int l4Ping = this.statistics.getPing(this.proxyPlayer.getRemoteAddress().getAddress());
 
-    if (Settings.IMP.MAIN.TCP_LISTENER.PROXY_DETECTOR_ENABLED && (l7Ping - l4Ping) > Settings.IMP.MAIN.TCP_LISTENER.PROXY_DETECTOR_DIFFERENCE) {
+    if (Settings.IMP.TCP_LISTENER.PROXY_DETECTOR_ENABLED && (l7Ping - l4Ping) > Settings.IMP.TCP_LISTENER.PROXY_DETECTOR_DIFFERENCE) {
       this.disconnect(this.plugin.getPackets().getKickProxyCheck(), true);
 
-      if (Settings.IMP.MAIN.TCP_LISTENER.DEBUG_ON_FAIL) {
+      if (Settings.IMP.TCP_LISTENER.DEBUG_ON_FAIL) {
         LimboFilter.getLogger().info("{} failed proxy check: L4 ping {}, L7 ping {}", this.proxyPlayer, l4Ping, l7Ping);
       }
 
       return true;
     }
 
-    if (Settings.IMP.MAIN.TCP_LISTENER.DEBUG_ON_SUCCESS) {
+    if (Settings.IMP.TCP_LISTENER.DEBUG_ON_SUCCESS) {
       LimboFilter.getLogger().info("{} passed proxy check: L4 ping {}, L7 ping {}", this.proxyPlayer, l4Ping, l7Ping);
     }
 

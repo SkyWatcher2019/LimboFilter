@@ -62,8 +62,8 @@ public class TcpListener {
   }
 
   public void start() throws PcapException {
-    this.handle = Pcap.openLive(Settings.IMP.MAIN.TCP_LISTENER.INTERFACE_NAME, Settings.IMP.MAIN.TCP_LISTENER.SNAPLEN, 1,
-        Settings.IMP.MAIN.TCP_LISTENER.TIMEOUT
+    this.handle = Pcap.openLive(Settings.IMP.TCP_LISTENER.INTERFACE_NAME, Settings.IMP.TCP_LISTENER.SNAPLEN, 1,
+        Settings.IMP.TCP_LISTENER.TIMEOUT
     );
 
     int port = ((VelocityConfiguration) this.plugin.getServer().getConfiguration()).getBind().getPort();
@@ -82,7 +82,7 @@ public class TcpListener {
     LinkType datalink = this.handle.datalink();
     new Thread(() -> {
       Thread.currentThread().setContextClassLoader(LimboFilter.class.getClassLoader());
-      long listenDelay = Settings.IMP.MAIN.TCP_LISTENER.LISTEN_DELAY;
+      long listenDelay = Settings.IMP.TCP_LISTENER.LISTEN_DELAY;
 
       try {
         this.handle.loop(-1, (packetHeader, rawPacket) -> {

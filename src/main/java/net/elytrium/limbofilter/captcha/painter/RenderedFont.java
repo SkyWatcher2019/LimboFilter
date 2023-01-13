@@ -42,7 +42,7 @@ public class RenderedFont {
     for (char c : alphabet) {
       GlyphVector vector = font.createGlyphVector(ctx, String.valueOf(c));
 
-      if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_ROTATE) {
+      if (Settings.IMP.CAPTCHA.GENERATOR.FONT_ROTATE) {
         vector.setGlyphTransform(0, AffineTransform.getRotateInstance((random.nextDouble() - 0.5) * Math.PI / 8));
       }
 

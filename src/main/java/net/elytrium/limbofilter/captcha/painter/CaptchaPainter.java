@@ -46,27 +46,27 @@ public class CaptchaPainter {
   private ThreadLocal<Iterator<Color>> curveColorIterator;
 
   public CaptchaPainter(int width, int height) {
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_RIPPLE) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.FONT_RIPPLE) {
       RippleEffect.AxisConfig vertical = new RippleEffect.AxisConfig(
           this.random.nextDouble() * 2 * Math.PI, (1 + this.random.nextDouble() * 2) * Math.PI,
-          height / Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_RIPPLE_AMPLITUDE_HEIGHT
+          height / Settings.IMP.CAPTCHA.GENERATOR.FONT_RIPPLE_AMPLITUDE_HEIGHT
       );
       RippleEffect.AxisConfig horizontal = new RippleEffect.AxisConfig(
           this.random.nextDouble() * 2 * Math.PI, (2 + this.random.nextDouble() * 2) * Math.PI,
-          width / Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_RIPPLE_AMPLITUDE_WIDTH
+          width / Settings.IMP.CAPTCHA.GENERATOR.FONT_RIPPLE_AMPLITUDE_WIDTH
       );
       this.effects.add(new RippleEffect(vertical, horizontal, width, height));
     }
 
-    this.effects.add(new OutlineEffect(Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_OUTLINE_OVERRIDE_RADIUS));
+    this.effects.add(new OutlineEffect(Settings.IMP.CAPTCHA.GENERATOR.FONT_OUTLINE_OVERRIDE_RADIUS));
 
     int length = (int) this.effects.stream().filter(CaptchaEffect::shouldCopy).count();
     this.buffers = ThreadLocal.withInitial(() -> new byte[length + 1][width * height]);
     this.width = width;
     this.height = height;
 
-    if (!Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVES_COLORS.isEmpty()) {
-      this.curveColor = Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVES_COLORS.stream()
+    if (!Settings.IMP.CAPTCHA.GENERATOR.CURVES_COLORS.isEmpty()) {
+      this.curveColor = Settings.IMP.CAPTCHA.GENERATOR.CURVES_COLORS.stream()
           .map(c -> new Color(Integer.parseInt(c, 16)))
           .collect(Collectors.toUnmodifiableList());
       this.curveColorIterator = ThreadLocal.withInitial(this.curveColor::iterator);
@@ -97,7 +97,7 @@ public class CaptchaPainter {
   }
 
   public int[] drawCurves() {
-    if (this.curveColor == null || Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVES_AMOUNT == 0) {
+    if (this.curveColor == null || Settings.IMP.CAPTCHA.GENERATOR.CURVES_AMOUNT == 0) {
       return null;
     }
 
@@ -109,7 +109,7 @@ public class CaptchaPainter {
 
     graphics.setColor(this.curveColorIterator.get().next());
 
-    for (int i = 0; i < Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVES_AMOUNT; ++i) {
+    for (int i = 0; i < Settings.IMP.CAPTCHA.GENERATOR.CURVES_AMOUNT; ++i) {
       this.addCurve(graphics);
     }
 
@@ -117,17 +117,17 @@ public class CaptchaPainter {
   }
 
   private void drawText(byte[] image, RenderedFont font, byte[] colors, String text) {
-    boolean scaleFont = Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.MAIN.FRAMED_CAPTCHA.AUTOSCALE_FONT;
-    int multiplierX = scaleFont ? Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH : 1;
-    int multiplierY = scaleFont ? Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT : 1;
+    boolean scaleFont = Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED && Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.AUTOSCALE_FONT;
+    int multiplierX = scaleFont ? Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH : 1;
+    int multiplierY = scaleFont ? Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT : 1;
 
-    int offsetX = Settings.IMP.MAIN.CAPTCHA_GENERATOR.LETTER_OFFSET_X * multiplierX;
-    int offsetY = Settings.IMP.MAIN.CAPTCHA_GENERATOR.LETTER_OFFSET_Y * multiplierY;
+    int offsetX = Settings.IMP.CAPTCHA.GENERATOR.LETTER_OFFSET_X * multiplierX;
+    int offsetY = Settings.IMP.CAPTCHA.GENERATOR.LETTER_OFFSET_Y * multiplierY;
     int x = offsetX;
     int y = offsetY;
-    int spacingX = Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_LETTER_SPACING_X * multiplierX;
-    int spacingY = Settings.IMP.MAIN.CAPTCHA_GENERATOR.FONT_LETTER_SPACING_Y * multiplierY;
-    boolean eachWordOnSeparateLine = Settings.IMP.MAIN.CAPTCHA_GENERATOR.EACH_WORD_ON_SEPARATE_LINE;
+    int spacingX = Settings.IMP.CAPTCHA.GENERATOR.FONT_LETTER_SPACING_X * multiplierX;
+    int spacingY = Settings.IMP.CAPTCHA.GENERATOR.FONT_LETTER_SPACING_Y * multiplierY;
+    boolean eachWordOnSeparateLine = Settings.IMP.CAPTCHA.GENERATOR.EACH_WORD_ON_SEPARATE_LINE;
 
     for (char c : text.toCharArray()) {
       RenderedFont.Glyph glyph = font.getGlyph(c);
@@ -164,7 +164,7 @@ public class CaptchaPainter {
   }
 
   private void addCurve(Graphics2D graphics) {
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVE_SIZE != 0) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.CURVE_SIZE != 0) {
       CubicCurve2D cubicCurve;
 
       if (this.random.nextBoolean()) {
@@ -189,7 +189,7 @@ public class CaptchaPainter {
       Point2D.Double prev = new Point2D.Double(coords[0], coords[1]);
       pathIterator.next();
 
-      graphics.setStroke(new BasicStroke(Settings.IMP.MAIN.CAPTCHA_GENERATOR.CURVE_SIZE));
+      graphics.setStroke(new BasicStroke(Settings.IMP.CAPTCHA.GENERATOR.CURVE_SIZE));
 
       while (!pathIterator.isDone()) {
         int currentSegment = pathIterator.currentSegment(coords);

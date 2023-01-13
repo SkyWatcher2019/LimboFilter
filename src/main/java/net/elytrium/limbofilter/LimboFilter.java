@@ -180,7 +180,7 @@ public class LimboFilter {
     metrics.addCustomChart(new SimplePie("check_settings", () -> String.valueOf(main.CHECK_CLIENT_SETTINGS)));
     metrics.addCustomChart(
         new SimplePie("has_backplate",
-            () -> String.valueOf(!main.CAPTCHA_GENERATOR.BACKPLATE_PATHS.isEmpty() && !main.CAPTCHA_GENERATOR.BACKPLATE_PATHS.get(0).isEmpty()))
+            () -> String.valueOf(!Settings.IMP.CAPTCHA.GENERATOR.BACKPLATE_PATHS.isEmpty() && !Settings.IMP.CAPTCHA.GENERATOR.BACKPLATE_PATHS.get(0).isEmpty()))
     );
     metrics.addCustomChart(new SingleLineChart("pings", () -> Math.toIntExact(this.statistics.getPings()))); // Total pings
     metrics.addCustomChart(new SingleLineChart("connections", () -> Math.toIntExact(this.statistics.getConnections())));
@@ -209,13 +209,13 @@ public class LimboFilter {
       setSerializer(new Serializer(serializer));
     }
 
-    long captchaGeneratorRamConsumed = (long) MapData.MAP_SIZE * Settings.IMP.MAIN.CAPTCHA_GENERATOR.IMAGES_COUNT;
+    long captchaGeneratorRamConsumed = (long) MapData.MAP_SIZE * Settings.IMP.CAPTCHA.GENERATOR.IMAGES_COUNT;
 
-    if (Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
-      captchaGeneratorRamConsumed *= (long) Settings.IMP.MAIN.FRAMED_CAPTCHA.WIDTH * Settings.IMP.MAIN.FRAMED_CAPTCHA.HEIGHT;
+    if (Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+      captchaGeneratorRamConsumed *= (long) Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.WIDTH * Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.HEIGHT;
     }
 
-    if (Settings.IMP.MAIN.CAPTCHA_GENERATOR.PREPARE_CAPTCHA_PACKETS) {
+    if (Settings.IMP.CAPTCHA.GENERATOR.PREPARE_CAPTCHA_PACKETS) {
       captchaGeneratorRamConsumed *= ProtocolVersion.values().length / 2f;
     } else {
       captchaGeneratorRamConsumed *= MapPalette.MapVersion.values().length;
@@ -274,7 +274,7 @@ public class LimboFilter {
       }
     });
 
-    Settings.MAIN.COORDS captchaCoords = Settings.IMP.MAIN.COORDS;
+    Settings.CAPTCHA.COORDS captchaCoords = Settings.IMP.CAPTCHA.COORDS;
     this.filterWorld = this.limboFactory.createVirtualWorld(
         Settings.IMP.MAIN.BOTFILTER_DIMENSION,
         captchaCoords.CAPTCHA_X, captchaCoords.CAPTCHA_Y, captchaCoords.CAPTCHA_Z,
@@ -334,7 +334,7 @@ public class LimboFilter {
       this.tcpListener = null;
     }
 
-    if (Settings.IMP.MAIN.TCP_LISTENER.PROXY_DETECTOR_ENABLED) {
+    if (Settings.IMP.TCP_LISTENER.PROXY_DETECTOR_ENABLED) {
       try {
         LOGGER.info("Initializing TCP Listener");
         this.tcpListener = new TcpListener(this);

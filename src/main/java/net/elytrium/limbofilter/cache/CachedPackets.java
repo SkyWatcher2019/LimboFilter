@@ -63,7 +63,7 @@ public class CachedPackets {
   private PreparedPacket framedCaptchaPackets;
 
   public void createPackets(LimboFactory limboFactory, PacketFactory packetFactory) {
-    Settings.MAIN.STRINGS strings = Settings.IMP.MAIN.STRINGS;
+    Settings.STRINGS strings = Settings.IMP.STRINGS;
 
     this.captchaAttemptsPacket = this.createCaptchaAttemptsPacket(limboFactory, packetFactory, strings.CHECKING_CAPTCHA_TITLE,
         strings.CHECKING_CAPTCHA_SUBTITLE, strings.CHECKING_CAPTCHA_CHAT, strings.CHECKING_WRONG_CAPTCHA_CHAT);
@@ -106,12 +106,12 @@ public class CachedPackets {
   }
 
   private PreparedPacket createFramedCaptchaPackets(LimboFactory limboFactory) {
-    Settings.MAIN.FRAMED_CAPTCHA settings = Settings.IMP.MAIN.FRAMED_CAPTCHA;
+    Settings.CAPTCHA.GENERATOR.FRAMED_CAPTCHA settings = Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA;
     if (!settings.FRAMED_CAPTCHA_ENABLED) {
       return null;
     }
 
-    Settings.MAIN.FRAMED_CAPTCHA.COORDS.OFFSET_1_7 offset = settings.COORDS.OFFSET_1_7;
+    Settings.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.COORDS.OFFSET_1_7 offset = settings.COORDS.OFFSET_1_7;
 
     PreparedPacket preparedPacket = limboFactory.createPreparedPacket();
 
@@ -154,7 +154,7 @@ public class CachedPackets {
       PreparedPacket packet = limboFactory.createPreparedPacket();
       this.createChatPacket(packet, MessageFormat.format(wrongCaptcha, i));
 
-      if (!Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+      if (!Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
         packet
             .prepare(
                 this.createSetSlotPacketLegacy(
@@ -174,7 +174,7 @@ public class CachedPackets {
     }
 
     packets[Settings.IMP.MAIN.CAPTCHA_ATTEMPTS] = this.createCaptchaFirstAttemptPacket(limboFactory, checkingTitle, checkingSubtitle, checkingChat);
-    if (!Settings.IMP.MAIN.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
+    if (!Settings.IMP.CAPTCHA.GENERATOR.FRAMED_CAPTCHA.FRAMED_CAPTCHA_ENABLED) {
       packets[Settings.IMP.MAIN.CAPTCHA_ATTEMPTS]
           .prepare(
               this.createSetSlotPacketLegacy(
@@ -246,7 +246,7 @@ public class CachedPackets {
   private PreparedPacket createFallingCheckPackets(LimboFactory limboFactory, PacketFactory packetFactory) {
     Settings.MAIN.FALLING_COORDS fallingCoords = Settings.IMP.MAIN.FALLING_COORDS;
 
-    Settings.MAIN.COORDS coords = Settings.IMP.MAIN.COORDS;
+    Settings.CAPTCHA.COORDS coords = Settings.IMP.CAPTCHA.COORDS;
     PreparedPacket preparedPacket = limboFactory.createPreparedPacket().prepare(
         this.createPlayerPosAndLook(
             packetFactory,
@@ -313,7 +313,7 @@ public class CachedPackets {
   }
 
   private MinecraftPacket createSetSlotPacketModern(PacketFactory packetFactory, VirtualItem item, int count, CompoundBinaryTag nbt) {
-    return (MinecraftPacket) packetFactory.createSetSlotPacket(0, Settings.IMP.MAIN.CAPTCHA_LEFT_HAND ? 45 : 36, item, count, 0, nbt);
+    return (MinecraftPacket) packetFactory.createSetSlotPacket(0, Settings.IMP.CAPTCHA.CAPTCHA_LEFT_HAND ? 45 : 36, item, count, 0, nbt);
   }
 
   public void createChatPacket(PreparedPacket packet, String text) {

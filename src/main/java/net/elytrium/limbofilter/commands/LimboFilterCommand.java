@@ -76,9 +76,9 @@ public class LimboFilterCommand implements SimpleCommand {
     }
 
     Serializer serializer = LimboFilter.getSerializer();
-    this.reloadComponent = serializer.deserialize(Settings.IMP.MAIN.STRINGS.RELOAD);
-    this.statsEnabledComponent = serializer.deserialize(Settings.IMP.MAIN.STRINGS.STATS_ENABLED);
-    this.statsDisabledComponent = serializer.deserialize(Settings.IMP.MAIN.STRINGS.STATS_DISABLED);
+    this.reloadComponent = serializer.deserialize(Settings.IMP.STRINGS.RELOAD);
+    this.statsEnabledComponent = serializer.deserialize(Settings.IMP.STRINGS.STATS_ENABLED);
+    this.statsDisabledComponent = serializer.deserialize(Settings.IMP.STRINGS.STATS_DISABLED);
   }
 
   @Override
@@ -145,7 +145,7 @@ public class LimboFilterCommand implements SimpleCommand {
     Statistics statistics = this.plugin.getStatistics();
     return LimboFilter.getSerializer().deserialize(
         MessageFormat.format(
-            Settings.IMP.MAIN.STRINGS.STATS_FORMAT,
+            Settings.IMP.STRINGS.STATS_FORMAT,
             statistics.getBlockedConnections(),
             statistics.getConnections() + "/" + Settings.IMP.MAIN.UNIT_OF_TIME_CPS,
             statistics.getPings() + "/" + Settings.IMP.MAIN.UNIT_OF_TIME_PPS,
